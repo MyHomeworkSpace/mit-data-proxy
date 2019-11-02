@@ -1,0 +1,1 @@
+You must download ojdbc10.jar from [this page](https://www.oracle.com/database/technologies/appdev/jdbc-ucp-19c-downloads.html) and place it in this folder.
