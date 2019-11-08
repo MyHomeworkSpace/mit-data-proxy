@@ -22,19 +22,14 @@ public class ProxyConnectHandler extends ConnectHandler {
 
 	@Override
     public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (baseRequest.isHandled()) {
+			return;
+		}
+
 		String method = request.getMethod();
 
 		if (!method.equalsIgnoreCase("CONNECT")) {
 			// this isn't for us
-			return;
-		}
-
-		System.out.println("yeeeet");
-
-		if (1 + 1 == 3) {
-			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-			response.getWriter().print("Authentication failed!");
-			response.getWriter().close();
 			return;
 		}
 

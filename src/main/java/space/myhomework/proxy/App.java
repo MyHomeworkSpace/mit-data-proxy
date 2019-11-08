@@ -148,6 +148,8 @@ public class App {
 		String dbUsername = getPropertyOrCrash(config, "db.username");
 		String dbPassword = getPropertyOrCrash(config, "db.password");
 
+		String authToken = getPropertyOrCrash(config, "auth.token");
+
 		String dbURL = "jdbc:oracle:thin:@" + dbHost + ":" + dbPort + ":" + dbSid;
 		connection = DriverManager.getConnection(dbURL, dbUsername, dbPassword);
 		if (connection == null) {
@@ -160,7 +162,7 @@ public class App {
 				Server server = new Server();
 
 				HandlerCollection collection = new HandlerCollection();
-				collection.addHandler(new AuthenticationHandler());
+				collection.addHandler(new AuthenticationHandler(authToken));
 				collection.addHandler(new ProxyConnectHandler());
 
 				server.setHandler(collection);
