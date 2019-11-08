@@ -19,7 +19,6 @@ import org.eclipse.jetty.server.handler.HandlerCollection;
 
 import io.javalin.Javalin;
 import io.javalin.http.Context;
-import io.javalin.http.HandlerType;
 
 public class App {
 	public static Connection connection;
@@ -124,11 +123,6 @@ public class App {
 		}
 	}
 
-	public static void handleConnect(Context ctx) {
-		System.out.println("handleConnect");
-		ctx.json("wheeeeee");
-	}
-
 	public static void main(String[] args) throws ClassNotFoundException, IOException, SQLException {
 		Class.forName("oracle.jdbc.OracleDriver");
 
@@ -173,6 +167,5 @@ public class App {
 		app.get("/", ctx -> ctx.redirect("https://myhomework.space", 302));
 		app.get("/ping", ctx -> ctx.json(new StatusResponse("ok")));
 		app.get("/fetch", App::handleFetch);
-		app.addHandler(HandlerType.CONNECT, "*", App::handleConnect);
 	}
 }
