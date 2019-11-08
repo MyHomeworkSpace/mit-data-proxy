@@ -76,7 +76,7 @@ public class App {
 				ArrayList<CatalogListing> listings = new ArrayList<CatalogListing>();
 
 				PreparedStatement stmt = connection.prepareStatement(
-					"SELECT * FROM cis_course_catalog WHERE ACADEMIC_YEAR = ? AND LAST_ACTIVITY_DATE > to_date(?, 'YYYY-MM-DD')"
+					"SELECT * FROM cis_course_catalog WHERE LAST_ACTIVITY_DATE > to_date(?, 'YYYY-MM-DD')"
 				);
 				stmt.setString(1, lastUpdateDate);
 				ResultSet rs = stmt.executeQuery();
