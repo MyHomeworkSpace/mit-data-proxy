@@ -14,8 +14,12 @@ import java.util.Date;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.HandlerCollection;
+
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+import io.javalin.http.HandlerType;
 
 public class App {
 	public static Connection connection;
@@ -120,6 +124,11 @@ public class App {
 		}
 	}
 
+	public static void handleConnect(Context ctx) {
+		System.out.println("handleConnect");
+		ctx.json("wheeeeee");
+	}
+
 	public static void main(String[] args) throws ClassNotFoundException, IOException, SQLException {
 		Class.forName("oracle.jdbc.OracleDriver");
 
@@ -146,9 +155,22 @@ public class App {
 			return;
 		}
 
-		Javalin app = Javalin.create().start(7000);
+		Javalin app = Javalin.create(javalinConfig -> {
+			javalinConfig.server(() -> {
+				Server server = new Server();
+
+				HandlerCollection collection = new HandlerCollection();
+				collection.addHandler(new AuthenticationHandler());
+				collection.addHandler(new ProxyConnectHandler());
+
+				server.setHandler(collection);
+
+				return server;
+			});
+		}).start(7000);
 		app.get("/", ctx -> ctx.redirect("https://myhomework.space", 302));
 		app.get("/ping", ctx -> ctx.json(new StatusResponse("ok")));
 		app.get("/fetch", App::handleFetch);
+		app.addHandler(HandlerType.CONNECT, "*", App::handleConnect);
 	}
 }

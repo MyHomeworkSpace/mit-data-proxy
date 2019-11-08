@@ -25,6 +25,9 @@ dependencies {
 
     compile files("libs/ojdbc10.jar")
 
+    compile "org.eclipse.jetty:jetty-server:9.4.20.v20190813"
+    compile "org.eclipse.jetty:jetty-webapp:9.4.20.v20190813"
+    compile "org.eclipse.jetty:jetty-proxy:9.4.20.v20190813"
     compile "io.javalin:javalin:3.4.1"
     compile "org.slf4j:slf4j-simple:1.7.26"
     compile "com.fasterxml.jackson.core:jackson-databind:2.10.0.pr1"
