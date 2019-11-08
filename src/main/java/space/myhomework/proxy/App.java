@@ -14,8 +14,11 @@ import java.util.Date;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import io.javalin.Javalin;
 import io.javalin.http.Context;
@@ -136,6 +139,12 @@ public class App {
 		}
 		config.load(configInput);
 
+		int appHttpPort = Integer.parseInt(getPropertyOrCrash(config, "app.httpPort"));
+		int appHttpsPort = Integer.parseInt(getPropertyOrCrash(config, "app.httpsPort"));
+
+		String httpsKeystorePath = getPropertyOrCrash(config, "https.keystore");
+		String httpsKeystorePassword = getPropertyOrCrash(config, "https.keystorePassword");
+
 		String dbHost = getPropertyOrCrash(config, "db.host");
 		int dbPort = Integer.parseInt(getPropertyOrCrash(config, "db.port"));
 		String dbSid = getPropertyOrCrash(config, "db.sid");
@@ -155,15 +164,42 @@ public class App {
 			javalinConfig.server(() -> {
 				Server server = new Server();
 
+				ArrayList<Connector> connectors = new ArrayList<Connector>();
+
+				// set up https connector
+				if (appHttpsPort != 0) {
+					SslContextFactory sslContextFactory = new SslContextFactory.Server();
+					sslContextFactory.setKeyStoreType("PKCS12");
+					sslContextFactory.setKeyStorePath(httpsKeystorePath);
+					sslContextFactory.setKeyStorePassword(httpsKeystorePassword);
+					sslContextFactory.setKeyManagerPassword(httpsKeystorePassword);
+
+					ServerConnector sslConnector = new ServerConnector(server, sslContextFactory);
+					sslConnector.setPort(appHttpsPort);
+					connectors.add(sslConnector);
+				}
+
+				// set up http connector
+				if (appHttpPort != 0) {
+					ServerConnector connector = new ServerConnector(server);
+					connector.setPort(appHttpPort);
+					connectors.add(connector);
+				}
+
+				// set connectors
+				Connector[] connectorArray = new Connector[connectors.size()];
+				connectors.toArray(connectorArray);
+                server.setConnectors(connectorArray);
+
+				// set up middleware
 				HandlerCollection collection = new HandlerCollection();
 				collection.addHandler(new AuthenticationHandler(authToken));
 				collection.addHandler(new ProxyConnectHandler());
-
 				server.setHandler(collection);
 
 				return server;
 			});
-		}).start(7000);
+		}).start();
 		app.get("/", ctx -> ctx.redirect("https://myhomework.space", 302));
 		app.get("/ping", ctx -> ctx.json(new StatusResponse("ok")));
 		app.get("/fetch", App::handleFetch);
