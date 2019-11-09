@@ -45,6 +45,7 @@ public class App {
 			String source = ctx.queryParam("source");
 			String lastUpdateDateInput = ctx.queryParam("lastUpdateDate");
 			String limitInput = ctx.queryParam("limit");
+			String academicYear = ctx.queryParam("academicYear");
 			String termCode = ctx.queryParam("termCode");
 
 			if (source == null || source.isBlank()) {
@@ -75,12 +76,18 @@ public class App {
 			}
 
 			if (source.equals("catalog")) {
+				if (academicYear == null || academicYear.isEmpty()) {
+					ctx.json(new ErrorResponse("error", "missing_params"));
+					return;
+				}
+
 				ArrayList<CatalogListing> listings = new ArrayList<CatalogListing>();
 
 				PreparedStatement stmt = connection.prepareStatement(
-					"SELECT * FROM cis_course_catalog WHERE LAST_ACTIVITY_DATE > to_date(?, 'YYYY-MM-DD')"
+					"SELECT * FROM cis_course_catalog WHERE ACADEMIC_YEAR = ? AND LAST_ACTIVITY_DATE > to_date(?, 'YYYY-MM-DD')"
 				);
-				stmt.setString(1, lastUpdateDate);
+				stmt.setString(1, academicYear);
+				stmt.setString(2, lastUpdateDate);
 				ResultSet rs = stmt.executeQuery();
 
 				int count = 0;
