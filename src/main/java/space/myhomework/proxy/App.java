@@ -88,18 +88,18 @@ public class App {
 				);
 				stmt.setString(1, academicYear);
 				stmt.setString(2, lastUpdateDate);
-				ResultSet rs = stmt.executeQuery();
-
-				int count = 0;
-				while (rs.next()) {
-					listings.add(new CatalogListing(rs));
-					count++;
-					if (limit != -1 && count >= limit) {
-						break;
+				try (ResultSet rs = stmt.executeQuery()) {
+					int count = 0;
+					while (rs.next()) {
+						listings.add(new CatalogListing(rs));
+						count++;
+						if (limit != -1 && count >= limit) {
+							break;
+						}
 					}
-				}
 
-				ctx.json(listings);
+					ctx.json(listings);
+				}
 			} else if (source.equals("offerings")) {
 				if (termCode == null || termCode.isEmpty()) {
 					ctx.json(new ErrorResponse("error", "missing_params"));
@@ -112,18 +112,18 @@ public class App {
 					"SELECT * FROM subject_offered WHERE term_code = ?"
 				);
 				stmt.setString(1, termCode);
-				ResultSet rs = stmt.executeQuery();
-
-				int count = 0;
-				while (rs.next()) {
-					offerings.add(new SubjectOffering(rs));
-					count++;
-					if (limit != -1 && count >= limit) {
-						break;
+				try (ResultSet rs = stmt.executeQuery()) {
+					int count = 0;
+					while (rs.next()) {
+						offerings.add(new SubjectOffering(rs));
+						count++;
+						if (limit != -1 && count >= limit) {
+							break;
+						}
 					}
-				}
 
-				ctx.json(offerings);
+					ctx.json(offerings);
+				}
 			} else {
 				ctx.json(new ErrorResponse("error", "invalid_params"));
 			}
