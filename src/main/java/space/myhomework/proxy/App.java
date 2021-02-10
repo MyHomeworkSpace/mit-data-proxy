@@ -129,7 +129,7 @@ public class App {
 			}
 		} catch (SQLException e) {
 			System.out.println(e);
-			ctx.json(new ErrorResponse("error", "internal_server_error"));
+			ctx.status(500).json(new ErrorResponse("error", "internal_server_error"));
 		}
 	}
 
