@@ -49,7 +49,7 @@ public class App {
 			String termCode = ctx.queryParam("termCode");
 
 			if (source == null || source.isBlank()) {
-				ctx.json(new ErrorResponse("error", "missing_params"));
+				ctx.status(403).json(new ErrorResponse("error", "missing_params"));
 				return;
 			}
 
@@ -60,7 +60,7 @@ public class App {
 					Date parsed = parser.parse(lastUpdateDateInput);
 					lastUpdateDate = parser.format(parsed);
 				} catch (ParseException e) {
-					ctx.json(new ErrorResponse("error", "invalid_params"));
+					ctx.status(403).json(new ErrorResponse("error", "invalid_params"));
 					return;
 				}
 			}
@@ -70,14 +70,14 @@ public class App {
 				try {
 					limit = Integer.parseInt(limitInput);
 				} catch (NumberFormatException e) {
-					ctx.json(new ErrorResponse("error", "invalid_params"));
+					ctx.status(403).json(new ErrorResponse("error", "invalid_params"));
 					return;
 				}
 			}
 
 			if (source.equals("catalog")) {
 				if (academicYear == null || academicYear.isEmpty()) {
-					ctx.json(new ErrorResponse("error", "missing_params"));
+					ctx.status(403).json(new ErrorResponse("error", "missing_params"));
 					return;
 				}
 
@@ -102,7 +102,7 @@ public class App {
 				}
 			} else if (source.equals("offerings")) {
 				if (termCode == null || termCode.isEmpty()) {
-					ctx.json(new ErrorResponse("error", "missing_params"));
+					ctx.status(403).json(new ErrorResponse("error", "missing_params"));
 					return;
 				}
 
@@ -125,7 +125,7 @@ public class App {
 					ctx.json(offerings);
 				}
 			} else {
-				ctx.json(new ErrorResponse("error", "invalid_params"));
+				ctx.status(403).json(new ErrorResponse("error", "invalid_params"));
 			}
 		} catch (SQLException e) {
 			System.out.println(e);
