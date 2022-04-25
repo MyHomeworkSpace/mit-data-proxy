@@ -100,6 +100,7 @@ public class App {
 
 					ctx.json(listings);
 				}
+				stmt.close();
 			} else if (source.equals("offerings")) {
 				if (termCode == null || termCode.isEmpty()) {
 					ctx.status(403).json(new ErrorResponse("error", "missing_params"));
@@ -124,6 +125,7 @@ public class App {
 
 					ctx.json(offerings);
 				}
+				stmt.close();
 			} else {
 				ctx.status(403).json(new ErrorResponse("error", "invalid_params"));
 			}
